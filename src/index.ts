@@ -1,5 +1,5 @@
 import { app, autoUpdater, BrowserWindow, dialog, globalShortcut, Menu, nativeImage, Notification, Tray } from 'electron';
-import { Client } from 'wwebjs-electron';
+import WAWebJS, { Client } from 'wwebjs-electron';
 import pie from "puppeteer-in-electron";
 import isDev from 'electron-is-dev'
 import { decodeMessage } from './utils/decodeMessage';
@@ -53,6 +53,29 @@ pie.initialize(app)
       // @ts-ignore
       const browser = await pie.connect(app, puppeteer);
       return { browser, window }
+    }
+
+    const checkNinthDigit = async (contact: string): Promise<string> => {
+      try {
+        let contactId: WAWebJS.ContactId
+        if (contact.startsWith('55') && contact.length === 13 && contact[4] === '9') {
+          contactId = await whatsappClient.getNumberId(contact.slice(0, 4) + contact.slice(5))
+        }
+
+        if (!contactId) {
+          contactId = await whatsappClient.getNumberId(contact)
+        }
+
+        if (contactId) {
+          contact = contactId._serialized
+          return contact
+        } else {
+          throw new Error('Contato inválido!')
+        }
+      } catch (error) {
+        console.error(error);
+        throw error
+      }
     }
     const main = async () => {
       let needRefresh = true
@@ -189,13 +212,15 @@ pie.initialize(app)
     } else {
       app.on('second-instance', async (event, commandLine) => {
         // Someone tried to run a second instance, we should focus our window.
-        const { contact, message } = decodeMessage(commandLine[commandLine.length - 1])
+        // eslint-disable-next-line prefer-const
+        let { contact, message } = decodeMessage(commandLine[commandLine.length - 1])
         mainWindow.webContents.send('log', 'SECONDE INSTANCE')
         if (mainWindow) {
           if (mainWindow.isMinimized()) mainWindow.restore()
           try {
             if (whatsAppReady) {
-              await whatsappClient.sendMessage(`${contact}@c.us`, message)
+              contact = await checkNinthDigit(contact)
+              await whatsappClient.sendMessage(contact, message)
             } else {
               mainWindow.webContents.send('warn', 'LOSTMESSAGES')
               lostMessages.push({ contact, message })
@@ -209,10 +234,12 @@ pie.initialize(app)
       })
 
       app.on('open-url', async (event, url) => {
-        const { contact, message } = decodeMessage(url)
+        // eslint-disable-next-line prefer-const
+        let { contact, message } = decodeMessage(url)
         if (mainWindow) {
           try {
             if (whatsAppReady) {
+              contact = await checkNinthDigit(contact)
               await whatsappClient.sendMessage(`${contact}@c.us`, message)
             } else {
               lostMessages.push({ contact, message })
