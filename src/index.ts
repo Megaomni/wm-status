@@ -271,7 +271,7 @@ pie.initialize(app)
 
     // Auto update
 
-    const server = 'https://wm-status.vercel.app'
+    const server = 'https://wm-status-update.vercel.app'
     const url = `${server}/update/${process.platform}/${app.getVersion()}`
 
     autoUpdater.setFeedURL({ url })
