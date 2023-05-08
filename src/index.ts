@@ -129,6 +129,24 @@ pie.initialize(app)
           // @ts-ignore
           whatsappClient = new Client(browser, wwebWindow);
 
+          whatsappClient.pupBrowser.on('targetchanged', async () => {
+            if (whatsappClient.pupPage) {
+              needRefresh = await whatsappClient.pupPage.evaluate(() => {
+                const body = document.querySelector('body')
+                if (body.classList.value.includes('version')) {
+                  return true
+                } else {
+                  return false
+                }
+              })
+
+              if (needRefresh) {
+                wwebWindow.webContents.reloadIgnoringCache()
+              }
+            }
+          })
+
+
           whatsappClient.on('qr', (qr: string) => {
             needRefresh = false
             mainWindow.webContents.send('onqrcode', qr)
@@ -169,16 +187,6 @@ pie.initialize(app)
           whatsappClient.on('auth_failure', (message) => {
             mainWindow.webContents.send('error', message)
           })
-
-          let counter = 15
-          const interval = setInterval(() => {
-            if (needRefresh) {
-              wwebWindow.webContents.reloadIgnoringCache()
-              counter += 5
-            } else {
-              clearInterval(interval)
-            }
-          }, counter * 1000);
 
           try {
             await whatsappClient.initialize();
