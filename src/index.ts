@@ -300,6 +300,10 @@ pie.initialize(app)
       })
     })
 
+    autoUpdater.on('checking-for-update', () => {
+      mainWindow.webContents.send('warn', 'Bucando por novas atualizações...')
+    })
+
     autoUpdater.on('update-available', () => {
       mainWindow.webContents.send('warn', 'Nova atualização disponível, baixando...')
     })
