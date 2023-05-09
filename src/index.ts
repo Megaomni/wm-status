@@ -1,4 +1,4 @@
-import { app, autoUpdater, BrowserWindow, dialog, globalShortcut, Menu, nativeImage, Notification, Tray } from 'electron';
+import { app, autoUpdater, BrowserWindow, dialog, globalShortcut, ipcMain, Menu, nativeImage, Notification, Tray } from 'electron';
 import WAWebJS, { Client } from 'wwebjs-electron';
 import pie from "puppeteer-in-electron";
 import isDev from 'electron-is-dev'
@@ -201,6 +201,14 @@ pie.initialize(app)
       }
       globalShortcut.register('F12', () => {
         mainWindow.webContents.toggleDevTools()
+      })
+
+      ipcMain.on('show-whatsapp', (event, show) => {
+        if (show) {
+          wwebWindow.show()
+        } else {
+          wwebWindow.hide()
+        }
       })
     }
 
