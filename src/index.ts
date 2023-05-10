@@ -20,6 +20,7 @@ let whatsappClient: Client
 let whatsAppReady = false
 let mainWindow: BrowserWindow
 let wwebWindow: BrowserWindow
+let reloadTimeout = 1000
 
 const lostMessages: { contact: string, message: string }[] = []
 const appIconPath = nativeImage.createFromPath(resolve(__dirname, 'images/app_icon_fill.png'))
@@ -34,13 +35,13 @@ pie.initialize(app)
         width: 512,
         webPreferences: {
           preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
-          nodeIntegration: true
+          nodeIntegration: true,
         },
         icon: resolve(__dirname, 'app_icon.png')
       });
-
       // and load the index.html of the app.
       mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+      mainWindow.webContents.send('getTimeout')
       return mainWindow
     };
     const createWWebWindow = async (): Promise<{ browser: Browser, window: BrowserWindow }> => {
@@ -141,7 +142,9 @@ pie.initialize(app)
               })
 
               if (needRefresh) {
-                wwebWindow.webContents.reloadIgnoringCache()
+                setTimeout(() => {
+                  wwebWindow.webContents.reloadIgnoringCache()
+                }, reloadTimeout);
               }
             }
           })
@@ -209,6 +212,10 @@ pie.initialize(app)
         } else {
           wwebWindow.hide()
         }
+      })
+
+      ipcMain.on('reload-timeout', (event, timeout: number) => {
+        reloadTimeout = timeout
       })
     }
 

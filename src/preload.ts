@@ -7,10 +7,19 @@ export const WhatsAppApi = {
   onconnected: (callback: (event: Electron.IpcRendererEvent, value: boolean) => void) => ipcRenderer.on('onconnected', callback),
   ondisconnected: (callback: (event: Electron.IpcRendererEvent, value: boolean) => void) => ipcRenderer.on('ondisconnected', callback),
   onloading: (callback: (event: Electron.IpcRendererEvent, value: { percent: number, message: string }) => void) => ipcRenderer.on('onloading', callback),
-  showWhatsapp: (show: boolean) => ipcRenderer.send('show-whatsapp', show)
+  /** Mostra/Esconde a tela do whatsapp web */
+  showWhatsapp: (show: boolean) => ipcRenderer.send('show-whatsapp', show),
+  /** Tempo de espera para recarregar página de versão do whatsapp em segundos */
+  setReloadWhenVersionPageTimeOut: (timeout: number) => {
+    localStorage.setItem('reloadTimout', (timeout * 1000).toString())
+  }
 }
 
 contextBridge.exposeInMainWorld('WhatsApp', WhatsAppApi)
+
+ipcRenderer.on('getTimeout', () => {
+  ipcRenderer.send('reload-timeout', localStorage.getItem('reloadTimout') ? Number(localStorage.getItem('reloadTimout')) : 1000)
+})
 
 ipcRenderer.on('log', (event, log) => {
   console.log(log);
