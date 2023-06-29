@@ -32,6 +32,7 @@ import { WhatsAppApi } from './preload';
 
 import { createRoot } from 'react-dom/client';
 import { WhatsApp } from './components/WhatsApp';
+import colors from 'tailwindcss/colors';
 
 const domNode = document.getElementById('root');
 export const root = createRoot(domNode);
@@ -47,11 +48,16 @@ const App = () => {
   const [ready, setReady] = useState(false)
   const [disconnected, setDisconnected] = useState(false)
   const [loading, setLoading] = useState({ status: true, message: null, percent: 0 })
+  const [fgColorQr, setFgColorQr] = useState<string>(localStorage.getItem('qrFgColor') || (colors.emerald['500'] || "#10b981"))
 
   useEffect(() => {
-    window.WhatsApp.onqrcode((event, qr: string) => {
+    window.WhatsApp.onqrcode((_, qr: string) => {
       setLoading(state => ({ ...state, status: false }))
       setQrcode(qr)
+    })
+
+    window.WhatsApp.onChangeQrCodeColor((_, color) => {
+      setFgColorQr(color)
     })
 
     window.WhatsApp.ondisconnected(() => {
@@ -74,7 +80,7 @@ const App = () => {
 
   return (
     <>
-      <WhatsApp qrcode={qrcode} ready={ready} loading={loading} disconnected={disconnected} />
+      <WhatsApp qrcode={qrcode} fgColorQr={fgColorQr} ready={ready} loading={loading} disconnected={disconnected} />
     </>
   );
 }

@@ -7,6 +7,12 @@ export const WhatsAppApi = {
   onconnected: (callback: (event: Electron.IpcRendererEvent, value: boolean) => void) => ipcRenderer.on('onconnected', callback),
   ondisconnected: (callback: (event: Electron.IpcRendererEvent, value: boolean) => void) => ipcRenderer.on('ondisconnected', callback),
   onloading: (callback: (event: Electron.IpcRendererEvent, value: { percent: number, message: string }) => void) => ipcRenderer.on('onloading', callback),
+  onChangeQrCodeColor: (callback: (event: Electron.IpcRendererEvent, color: string) => void) => ipcRenderer.on('onChangeQrCodeColor', callback),
+  /** Muda a cor dos pontos do qrcode */
+  changeFgQrColor: (color: string) => {
+    localStorage.setItem('qrFgColor', color)
+    return ipcRenderer.send('change-qr-color', color)
+  },
   /** Mostra/Esconde a tela do whatsapp web */
   showWhatsapp: (show: boolean) => ipcRenderer.send('show-whatsapp', show),
   /** Tempo de espera para recarregar página de versão do whatsapp em segundos */

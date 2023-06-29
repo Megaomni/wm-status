@@ -152,6 +152,7 @@ pie.initialize(app)
 
           whatsappClient.on('qr', (qr: string) => {
             needRefresh = false
+            console.log('QR Code carregado')
             mainWindow.webContents.send('onqrcode', qr)
           });
 
@@ -206,7 +207,7 @@ pie.initialize(app)
         mainWindow.webContents.toggleDevTools()
       })
 
-      ipcMain.on('show-whatsapp', (event, show) => {
+      ipcMain.on('show-whatsapp', (_, show) => {
         if (show) {
           wwebWindow.show()
         } else {
@@ -214,7 +215,11 @@ pie.initialize(app)
         }
       })
 
-      ipcMain.on('reload-timeout', (event, timeout: number) => {
+      ipcMain.on('change-qr-color', (_, color) => {
+        mainWindow.webContents.send('onChangeQrCodeColor', color)
+      })
+
+      ipcMain.on('reload-timeout', (_, timeout: number) => {
         reloadTimeout = timeout
       })
     }

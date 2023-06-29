@@ -1,9 +1,9 @@
 import { QRCodeCanvas } from "qrcode.react";
-import colors from 'tailwindcss/colors'
 import React from "react";
 
 interface WhatsAppProps {
   qrcode: string
+  fgColorQr: string
   ready: boolean
   loading: {
     status: boolean;
@@ -13,7 +13,8 @@ interface WhatsAppProps {
   disconnected: boolean
 }
 
-export const WhatsApp = ({ qrcode, ready, loading, disconnected }: WhatsAppProps) => {
+export const WhatsApp = ({ qrcode, fgColorQr, ready, loading, disconnected }: WhatsAppProps) => {
+  console.log(fgColorQr);
   return (
     <div className="h-screen bg-zinc-50 text-center flex flex-col justify-center items-center gap-4">
       {
@@ -39,7 +40,7 @@ export const WhatsApp = ({ qrcode, ready, loading, disconnected }: WhatsAppProps
                       <QRCodeCanvas
                         value={qrcode}
                         size={256}
-                        fgColor={colors.emerald['500']}
+                        fgColor={fgColorQr}
                       />
                     </>
                   ) : null
