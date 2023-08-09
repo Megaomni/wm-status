@@ -1,7 +1,7 @@
 {
   "name": "wmstatus",
   "productName": "WM Status",
-  "version": "1.0.22",
+  "version": "1.0.23",
   "description": "App para envio de mensagem de status",
   "main": ".webpack/main",
   "scripts": {
@@ -55,6 +55,6 @@
     "qrcode.react": "^3.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "wwebjs-electron": "^1.20.1"
+    "wwebjs-electron": "^1.21.2"
   }
 }
