@@ -247,7 +247,9 @@ pie.initialize(app)
           if (mainWindow.isMinimized()) mainWindow.restore()
           try {
             if (whatsAppReady) {
+              mainWindow.webContents.send('log', whatsAppReady)
               contact = await checkNinthDigit(contact)
+              mainWindow.webContents.send('warn', 'ANTES DE ENVIAR MENSAGEM')
               const sendMessageReturn = await whatsappClient.sendMessage(contact, message)
               mainWindow.webContents.send('warn', sendMessageReturn)
             } else {
@@ -255,8 +257,11 @@ pie.initialize(app)
               lostMessages.push({ contact, message })
             }
           } catch (error) {
+            mainWindow.webContents.send('error', error)
             dialog.showErrorBox('Ops!', error)
           }
+        } else {
+          mainWindow.webContents.send('error', 'MAIN WINDOW NOT FOUND')
         }
         // the commandLine is array of strings in which last element is deep link url
         // the url str ends with /
