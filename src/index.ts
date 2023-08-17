@@ -248,7 +248,8 @@ pie.initialize(app)
           try {
             if (whatsAppReady) {
               contact = await checkNinthDigit(contact)
-              await whatsappClient.sendMessage(contact, message)
+              const sendMessageReturn = await whatsappClient.sendMessage(contact, message)
+              mainWindow.webContents.send('warn', sendMessageReturn)
             } else {
               mainWindow.webContents.send('warn', 'LOSTMESSAGES')
               lostMessages.push({ contact, message })
