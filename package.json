@@ -55,6 +55,6 @@
     "qrcode.react": "^3.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "wwebjs-electron": "^1.21.2"
+    "wwebjs-electron": "https://github.com/AndyTargino/wwebjs-electron/archive/refs/tags/1.22.2-alpha.0.tar.gz"
   }
 }
